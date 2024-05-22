@@ -13,7 +13,7 @@ module.exports = (env) => {
       popup: path.resolve(__dirname, '..', 'src', 'popup/index.tsx'),
     },
     output: {
-      path: path.join(__dirname, '../dist'),
+      path: path.join(__dirname, `../dist/${env.browser}`),
       filename: '[name].js',
       clean: true
     },
