@@ -1,6 +1,7 @@
-import { AdsConfig, Config } from './config';
+import { AdsConfig } from './config';
 import { MESSAGES } from './constants';
 import { isVisibleInViewport } from './utils';
+import Config from '../public/config.json';
 
 function getFirstElementsBySelectors(root: Document | Element, selectors: string[]): Element[] {
   for (const selector of selectors) {
@@ -18,7 +19,7 @@ function getFirstElementBySelectors(root: Document | Element, selectors: string[
 };
 
 function* adElements(config: AdsConfig): Generator<Element, void, unknown> {
-  let rows: Element[] = getFirstElementsBySelectors(document, config.selectors.inboxRow);
+  const rows: Element[] = getFirstElementsBySelectors(document, config.selectors.inboxRow);
   for (const row of rows) {
     const spans = getFirstElementsBySelectors(row, config.selectors.inboxRowAdIndicator);
     const isAdFound = spans.some(s => s.textContent && config.texts.inboxRowAdIndicatorText.includes(s.textContent));
@@ -80,10 +81,9 @@ function initObserver(config: AdsConfig): boolean {
 
 function onPageLoad() {
   if (!isPageRelevant()) return;
-  const config: Config = require('../public/config.json') as Config;
   let initInterval: NodeJS.Timeout | undefined = undefined;
   initInterval = setInterval(() => {
-    if (!initObserver(config.adsConfig)) return;
+    if (!initObserver(Config.adsConfig)) return;
     initInterval && clearInterval(initInterval);
   }, 1000);
 };
