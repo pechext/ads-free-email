@@ -1,0 +1,15 @@
+{
+  "v": 1,
+  "adsConfig": {
+    "urlPatterns": ["mail.google.com"],
+    "selectors": {
+      "inboxContainer": ["div[role='main']"],
+      "inboxRow": ["tr[role='row']"],
+      "inboxRowAdIndicator": ["td > div > span > span"]
+    },
+    "texts": {
+      "inboxRowAdIndicatorText": ["Ad"]
+    },
+    "mutationObserverConfig": { "attributes": true, "childList": true, "subtree": true }
+  }
+}
