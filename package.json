@@ -14,7 +14,7 @@
     "prepare:production": "npm run build:production && npm run zip:production",
     "format": "prettier --write \"src/**/*.tsx\" \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint -c .eslintrc.js --ext .ts ./src",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "watch": "npm run build:staging -- --env=watch=true"
   },
   "keywords": [],
