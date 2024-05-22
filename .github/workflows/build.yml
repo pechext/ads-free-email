@@ -3,25 +3,24 @@ run-name: ${{ github.actor }} has pushed new production code
 on: 
   push:
     branches: 
-      - 'release/**'
-
+      - release/**
 jobs:
-  run-basic-workflow: 
-    uses: pechext/ads-free-gmail/.github/workflows/basic.yml@main
-
   build_and_upload:
-    needs: run-basic-workflow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: create .npmrc
+        run: echo -e "@pechext:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${{ secrets.PECHEXT_GITHUB_TOKEN }}" > .npmrc
+    
       - uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
           cache: 'npm'
 
       - name: cache npm dependencies
         id: cache-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
@@ -29,13 +28,13 @@ jobs:
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: install dependencies
         run: npm ci
-
+      
       - name: extract info
         id: extract_info
         run: |
           branch=`git symbolic-ref --short HEAD | tr / _`
           commit=`git rev-parse --short HEAD`
-          version=`cat ./manifests/manifest-chrome.json | jq .version | sed 's/"//g'`
+          version=`cat ./public/manifest.json | jq .version | sed 's/"//g'`
           echo "branch=$branch" >> $GITHUB_OUTPUT
           echo "commit=$commit" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT  
@@ -47,7 +46,7 @@ jobs:
         run: npm run prepare:staging
 
       - name: upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: staging-${{steps.extract_info.outputs.branch}}-${{steps.extract_info.outputs.commit}}
           path: dist/**/*staging*.zip
@@ -60,7 +59,7 @@ jobs:
         run: npm run prepare:production
 
       - name: upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: production-${{steps.extract_info.outputs.branch}}-${{steps.extract_info.outputs.commit}}
           path: dist/**/*production*.zip
